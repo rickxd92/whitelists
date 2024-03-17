@@ -65,50 +65,50 @@ const alterarDadosBancariosDocs = {
         '400.1': {
           description: 'É obrigatório informar o cartão do beneficiário para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(1, 'o cartão do beneficiário').corpo
+            'application/json': ''
           }
         },
         '400.2': {
           description: 'O número do cartão do beneficiário informado precisa ter 15 posições e ser numérico!',
           examples: {
-            'application/json': Respostas.numeroCartaoBeneficiario(2).corpo
+            'application/json': ''
           }
         },
         '404.3': {
           description:
             'É obrigatório informar o CPF completo com digito verificador para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(3, 'o CPF completo com digito verificador').corpo
+            'application/json': ''
           }
         },
         '404.4': {
           description: 'É obrigatório informar o Banco para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(4, 'o Banco').corpo
+            'application/json': ''
           }
         },
         '404.5': {
           description: 'É obrigatório informar a Agência para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(5, 'a Agência').corpo
+            'application/json': ''
           }
         },
         '404.6': {
           description: 'É obrigatório informar a Conta Corrente para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(6, 'a Conta Corrente').corpo
+            'application/json': ''
           }
         },
         '404.7': {
           description: 'É obrigatório informar o dv da Conta Corrente para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(7, 'o dv da Conta Corrente').corpo
+            'application/json': ''
           }
         },
         '404.8': {
           description: 'É obrigatório informar o Tipo de Conta Corrente para a alteração dos dados bancários!',
           examples: {
-            'application/json': Respostas.validaDadosBancarios(8, 'o Tipo de Conta Corrente').corpo
+            'application/json': ''
           }
         },
         '500.99': {

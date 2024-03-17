@@ -1,4 +1,3 @@
-import { descaracterizarTexto } from '../../utils';
 const winston = require('winston');
 /*require('winston-daily-rotate-file');
 
@@ -58,9 +57,9 @@ function formatarDados(dados: {}) {
     const chavesArray = Object.keys(dados);
     chavesArray.forEach((chave, index) => {
       if (chave === 'cpf') {
-        dados[chave] = descaracterizarTexto(dados[chave], '*', 0, 5);
+        dados[chave] = '';
       } else if (chave === 'senha') {
-        dados[chave] = descaracterizarTexto(dados[chave], '*');
+        dados[chave] = '';
       } else if (chave === 'conteudo') {
         dados[chave] = '';
       } else if (chave === 'listaDocumentos') {

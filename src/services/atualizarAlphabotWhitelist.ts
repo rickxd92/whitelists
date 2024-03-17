@@ -1,15 +1,14 @@
 import axios from 'axios';
-import { criarbd, inserirDadosBd, lerDadosBd } from 'utils/funcoes/auxiliares';
+import { WhitelistAlphabot } from 'interfaces';
+import { clearTable, inserirDadosBd } from '../utils/funcoes/auxiliares';
 
 function atualizarAlphabotWhitelist() {
-  const opcoes = obterOpcoes();
-
-  return atualizarAlphabotWhitelistRest(opcoes);
+  return atualizarAlphabotWhitelistRest();
 }
 
-function obterOpcoes() {
+function obterOpcoes(pageNum = 0, pageSize = 30) {
   return {
-    url: `https://www.alphabot.app/api/projects?sort=newest&scope=all&showHidden=false&pageSize=2&pageNum=0&search=&project=&filter=`,
+    url: `https://www.alphabot.app/api/projects?sort=newest&scope=all&showHidden=false&pageSize=${pageSize}&pageNum=${pageNum}&search=&project=&filter=`,
     headers: {
       authority: 'www.alphabot.app',
       cookie:
@@ -18,18 +17,54 @@ function obterOpcoes() {
   };
 }
 
-async function atualizarAlphabotWhitelistRest({ url, headers }): Promise<any> {
+async function atualizarAlphabotWhitelistRest(): Promise<any> {
   let respostaBff = {};
-  let respostaLegado = {};
+  let pageNum = 0;
+
+  clearTable('alphabot', 'whitelists');
 
   try {
-    const { status, data } = await axios.get(url, { headers });
+    while (true) {
+      console.log('Pagina atual: ', pageNum);
+      const opcoes = obterOpcoes(pageNum);
+      const url = opcoes.url;
+      const headers = opcoes.headers;
+      const dadosObj = [] as WhitelistAlphabot[];
 
-    respostaBff = { status, data: 'Executado com sucesso!' };
+      const { status, data } = await axios.get(url, { headers });
 
-    criarbd();
-    inserirDadosBd();
-    lerDadosBd();
+      if (data.length === 0) {
+        respostaBff = { status, data: 'Executado com sucesso!' };
+        break;
+      }
+
+      // console.log('data', data);
+
+      data.forEach(item => {
+        dadosObj.push({
+          nome: item.name,
+          endDate: new Date(item.endDate),
+          blockchain: item.blockchain,
+          ogPrice: item.ogPrice ? item.ogPrice : '',
+          wlPrice: item.wlPrice ? item.wlPrice : '',
+          pubPrice: item.pubPrice ? item.pubPrice : '',
+          supply: item.supply ? item.supply : '',
+          qtdVencedores:
+            (item.winnerCount ? item.winnerCount : '0') + '(' + (item.entryCount ? item.entryCount : '0') + ')',
+          slug: item.slug,
+          id: item._id,
+          plataforma: 'Alphabot',
+          precisaDiscordRole: false,
+          discordRole: '',
+          urlCompleta: 'https://www.alphabot.app/' + item.slug
+        });
+      });
+
+      inserirDadosBd('alphabot', dadosObj, 'whitelists');
+
+      pageNum++;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
 
     return { respostaBff };
   } catch (error) {
