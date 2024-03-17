@@ -204,7 +204,7 @@ async function inserirDadosBd(tabela: string, dados: WhitelistAlphabot[], bd: st
   }
 }
 
-async function lerDadosBd() {
+async function lerDadosBd(tabela: string) {
   const client = new Client({
     user: 'postgres',
     password: '#Amora@157#',
@@ -217,9 +217,11 @@ async function lerDadosBd() {
     await client.connect();
 
     // Verificar se a tabela já existe
-    const queryResult = await client.query(`SELECT * FROM alphabot;`);
+    const queryResult = await client.query(`SELECT * FROM ${tabela};`);
 
-    console.log('Dados salvos ===> ', queryResult.rows);
+    // console.log('queryResult ===> ', queryResult.rows);
+
+    return queryResult.rows;
   } catch (error) {
     console.error('Erro ao recuperar dados:', error);
   } finally {

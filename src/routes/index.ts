@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import { getAtualizarAlphabotWhitelist, getAtualizarAtlasWhitelist, postCreateDB } from '../controllers';
+import {
+  getAtualizarAlphabotWhitelist,
+  getAtualizarAtlasWhitelist,
+  getObterAlphabotWhitelist,
+  getObterAtlasWhitelist,
+  postCreateDB
+} from '../controllers';
 import swaggerSetupDocs from '../documentacao/swagger';
 import { Rotas, configurarTimeout } from '../utils';
 
@@ -11,6 +17,8 @@ router.use(configurarTimeout);
 router.get(`/${Rotas.documentacao}`, swaggerUi.setup(swaggerSetupDocs));
 router.get(`/${Rotas.updateWhitelistsAlphabot}`, getAtualizarAlphabotWhitelist);
 router.get(`/${Rotas.updateWhitelistsAtlas}`, getAtualizarAtlasWhitelist);
+router.get(`/${Rotas.obterAlphabotWhitelist}`, getObterAlphabotWhitelist);
+router.get(`/${Rotas.obterAtlasWhitelist}`, getObterAtlasWhitelist);
 router.post(`/${Rotas.createDB}`, postCreateDB);
 
 export default router;
