@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { criarbd, inserirDadosBd, lerDadosBd } from 'utils/funcoes/auxiliares';
 
 function atualizarAlphabotWhitelist() {
   const opcoes = obterOpcoes();
@@ -22,23 +23,21 @@ async function atualizarAlphabotWhitelistRest({ url, headers }): Promise<any> {
   let respostaLegado = {};
 
   try {
-    console.log('url', url);
     const { status, data } = await axios.get(url, { headers });
 
-    console.log('data', data);
-    console.log('status', status);
+    respostaBff = { status, data: 'Executado com sucesso!' };
 
-    respostaBff = data;
-    respostaLegado = status;
+    criarbd();
+    inserirDadosBd();
+    lerDadosBd();
 
-    return { respostaBff, respostaLegado };
+    return { respostaBff };
   } catch (error) {
     console.log('error', error);
 
-    respostaBff = error ? '' : '';
-    respostaLegado = error ? '' : '';
+    respostaBff = error ? error : '';
 
-    return { respostaBff, respostaLegado };
+    return { respostaBff };
   }
 }
 

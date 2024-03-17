@@ -3,6 +3,63 @@ import xml2js, { processors } from 'xml2js';
 import { gravarLog } from '../../libs';
 import { Erros, Respostas } from '../consts';
 
+function criarbd() {
+  const sqlite3 = require('sqlite3').verbose();
+
+  // Cria ou abre o banco de dados "database.sqlite"
+  const db = new sqlite3.Database('database.sqlite');
+
+  // Executa uma consulta para criar a tabela "usuarios"
+  db.run(`
+CREATE TABLE IF NOT EXISTS whitelistAlphabot (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome VARCHAR(40) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  senha VARCHAR(255) NOT NULL
+);
+`);
+
+  // Fecha a conexão com o banco de dados
+  db.close();
+}
+
+function inserirDadosBd() {
+  const sqlite3 = require('sqlite3').verbose();
+
+  // Abre o banco de dados "database.sqlite"
+  const db = new sqlite3.Database('database.sqlite');
+
+  // Insere um novo usuário na tabela "usuarios"
+  db.run(`
+INSERT INTO whitelistAlphabot (nome, email, senha)
+VALUES ('João Silva', 'joaosilva@email.com', '123456')
+`);
+
+  // Fecha a conexão com o banco de dados
+  db.close();
+}
+
+function lerDadosBd() {
+  const sqlite3 = require('sqlite3').verbose();
+
+  // Abre o banco de dados "database.sqlite"
+  const db = new sqlite3.Database('database.sqlite');
+
+  // Seleciona todos os usuários da tabela "usuarios"
+  db.all('SELECT * FROM whitelistAlphabot', (err, rows) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    // Exibe os dados dos usuários
+    console.log(rows);
+
+    // Fecha a conexão com o banco de dados
+    db.close();
+  });
+}
+
 function descaracterizarTexto(texto: string, simbolo: string, inicio: number = 0, final?: number) {
   const textoSubstituir = texto.substring(inicio, final);
   const mascara = textoSubstituir.replace(/\S/g, simbolo);
@@ -88,14 +145,23 @@ function tratarNumeroCartao(cartaoSegurado: any) {
 }
 
 function trataErro(error): { status: any; data: any } {
-  if ((error?.response?.status && error?.response?.data )) {
-    return { data: error.response.data , status: error.response.status };
-  }  else if (error.status === 200 || error.status === 400) {
+  if (error?.response?.status && error?.response?.data) {
+    return { data: error.response.data, status: error.response.status };
+  } else if (error.status === 200 || error.status === 400) {
     return { status: error.status, data: error.data };
   } else {
     return {
       status: 500,
-      data: { mensagens: [{ codigoMensagem: '500', descricaoMensagem: 'Desculpe, estamos com problemas técnicos. Tente novamente daqui alguns minutos.' }], numeroProtocoloReembolso: '', taskId: '' }
+      data: {
+        mensagens: [
+          {
+            codigoMensagem: '500',
+            descricaoMensagem: 'Desculpe, estamos com problemas técnicos. Tente novamente daqui alguns minutos.'
+          }
+        ],
+        numeroProtocoloReembolso: '',
+        taskId: ''
+      }
     };
   }
 }
@@ -103,11 +169,13 @@ function trataErro(error): { status: any; data: any } {
 export {
   configurarTimeout,
   converterXmlParaJson,
+  criarbd,
   descaracterizarTexto,
+  inserirDadosBd,
+  lerDadosBd,
   obterAmbiente,
   obterMensagemErro,
   primeirasMaiusculas,
   trataErro,
   tratarNumeroCartao
 };
-

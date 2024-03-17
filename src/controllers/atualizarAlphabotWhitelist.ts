@@ -1,13 +1,10 @@
-import { gravarLog } from '../libs';
+import { Request, Response } from 'express';
 import { atualizarAlphabotWhitelist } from '../services';
-import { Rotas } from '../utils';
 
-async function getAtualizarAlphabotWhitelist() {
+async function getAtualizarAlphabotWhitelist(req: Request, res: Response) {
   console.log('getAtualizarAlphabotWhitelist');
-  // const dadosBancarios = req.body;
-  const { respostaBff, respostaLegado } = await atualizarAlphabotWhitelist();
-  // res.status(respostaBff.status).json(respostaBff.corpo);
-  gravarLog(Rotas.validarProcedimentoReembolso, respostaBff, respostaLegado);
+  const { respostaBff } = await atualizarAlphabotWhitelist();
+  res.status(respostaBff.status).json(respostaBff.data);
 }
 
 export { getAtualizarAlphabotWhitelist };
