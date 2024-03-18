@@ -1,6 +1,6 @@
 {
-  "name": "bsmo-bff-saudereembolso",
-  "version": "1.0.44",
+  "name": "whitelist-backend",
+  "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
