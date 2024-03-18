@@ -82,7 +82,7 @@ async function createTable(tabela: string, bd: string) {
           giveawayUrl VARCHAR(255),
           plataforma VARCHAR(255),
           needDiscordRole BOOLEAN,
-          discordRole VARCHAR(255),
+          discordRole TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           isSelected BOOLEAN DEFAULT FALSE
@@ -229,6 +229,28 @@ async function lerDadosBd(tabela: string) {
   }
 }
 
+async function alterarIsSelectedBd(bd: string, tabela: string, id: string, isSelected: boolean) {
+  const client = connectionCreate(bd);
+
+  try {
+    await client.connect();
+
+    await client.query(`
+      UPDATE ${tabela}
+      SET isselected = ${isSelected}
+      WHERE id = '${id}';
+    `);
+
+    console.log('Dados atualizados com sucesso.');
+
+    return true;
+  } catch (error) {
+    console.error('Erro ao recuperar dados:', error);
+  } finally {
+    await client.end();
+  }
+}
+
 function configurarTimeout(req: Request, res: Response, next: NextFunction) {
   const rota = req.path.substring(1);
 
@@ -243,4 +265,4 @@ function configurarTimeout(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export { clearTable, configurarTimeout, createDB, createTable, inserirDadosBd, lerDadosBd };
+export { alterarIsSelectedBd, clearTable, configurarTimeout, createDB, createTable, inserirDadosBd, lerDadosBd };

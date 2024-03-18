@@ -4,6 +4,7 @@ enum Rotas {
   updateWhitelistsAtlas = 'updateWhitelistsAtlas',
   obterAlphabotWhitelist = 'obterAlphabotWhitelist',
   obterAtlasWhitelist = 'obterAtlasWhitelist',
+  alterarIsSelected = 'alterarIsSelected',
   createDB = 'createDB'
 }
 

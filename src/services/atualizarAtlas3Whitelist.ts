@@ -45,6 +45,7 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
         let typeGiveaway = item.collabType;
         let project = item.project;
         let collab = item.collabProject;
+        let rules = item.rules;
 
         let nome = '';
         let blockchain = '';
@@ -57,6 +58,9 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
         let slug = item.slug;
         let id = item.id;
         let plataforma = 'Atlas3';
+        let discordRoleList: string[] = [];
+        let discordRoleText: string = '';
+        let precisaDiscordRole: boolean = false;
 
         // Collab = RECEIVE_SPOTS
         // Project = GIVE_SPOTS
@@ -79,6 +83,20 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
 
         let urlCompleta = `https://atlas3.io/project/${project.slug}/giveaway/${slug}`;
 
+        if (rules.length > 0) {
+          rules.forEach(rule => {
+            if (rule.type === 'DISCORD_ROLE') {
+              precisaDiscordRole = true;
+              rule.discordRoleRule.roles.forEach(role => {
+                const roleName = role.role.name ? role.role.name : '';
+                discordRoleList.push(roleName);
+              });
+
+              discordRoleText = discordRoleList.join('; ');
+            }
+          });
+        }
+
         dadosObj.push({
           nome,
           endDate,
@@ -91,8 +109,8 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
           slug,
           id,
           plataforma,
-          precisaDiscordRole: false,
-          discordRole: '',
+          precisaDiscordRole,
+          discordRole: discordRoleText,
           urlCompleta
         });
       });

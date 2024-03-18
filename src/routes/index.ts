@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import {
+  alterarIsSelected,
   getAtualizarAlphabotWhitelist,
   getAtualizarAtlasWhitelist,
   getObterAlphabotWhitelist,
@@ -20,5 +21,6 @@ router.get(`/${Rotas.updateWhitelistsAtlas}`, getAtualizarAtlasWhitelist);
 router.get(`/${Rotas.obterAlphabotWhitelist}`, getObterAlphabotWhitelist);
 router.get(`/${Rotas.obterAtlasWhitelist}`, getObterAtlasWhitelist);
 router.post(`/${Rotas.createDB}`, postCreateDB);
+router.post(`/${Rotas.alterarIsSelected}`, alterarIsSelected);
 
 export default router;
