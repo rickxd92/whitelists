@@ -14,7 +14,7 @@ async function obterAtlasWhitelistRest(): Promise<any> {
 
     return { respostaBff };
   } catch (error) {
-    console.log('error', error);
+    console.log('error = ', error);
 
     respostaBff = error ? error : '';
 
