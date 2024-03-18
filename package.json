@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "ts-node-dev ./src/server.ts",
-    "build": "./node_modules/typescript/bin/tsc",
-    "buildRun": "tsc & node ./dist/server.js",
+    "build": "tsc --project ./ --outDir dist",
     "local-start": "./node_modules/typescript/bin/tsc && nodemon --watch src/ --exec \"npm run buildRun\" -e ts",
     "clean": "rm -rf dist",
     "test": "jest int",
