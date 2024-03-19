@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && vercel",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules --respawn src/server.ts",
     "deploy": "tsc && vercel"
