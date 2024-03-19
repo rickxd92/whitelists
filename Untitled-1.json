@@ -1,0 +1,211 @@
+{
+    "id": "65c398a1a8a8543df59648bf",
+    "slug": "basebet-guaranteed-spots-ad20i1",
+    "name": "BaseBet Guaranteed Spots",
+    "description": "🟢BaseBet\n\nThe Largest Casino & Sportsbook in Crypto,\nOn-chain, Smart contract governed, No KYC, Provably Fair.\n\nAt BaseBet we have 10,850+ Games & 50+ Sport Categories! \n- Fully doxxed team, super notable Solana team of Advisors & bluechip Artists SkyPunch Studios.🎲\n\n- TestNet Launched: https://www.basebet.io/\n\n🚀Coming to market with a 3,333 Utility Centric PFP NFTs on Solana which includes HUGE Utilities such as:\n\n- 30% Platform Revenue-share Per NFT!🤝\n- Increased Rakeback / Cashback.\n- $BBT Airdrop.⚡️\n- Discounted access for $BBT.\n- Free weekly Casino spins.\n- Free weekly bets.\n- VIP Platform Membership.\nAnd some other utilities found in our white-paper.\n\nFollow: https://twitter.com/basebetio\nDiscord: https://discord.gg/basebetio\nPitchDeck: https://docsend.com/view/e7bygjg7ukw2h67p",
+    "createdAt": "2024-02-07T14:50:09.842Z",
+    "imageUrl": null,
+    "bannerUrl": "https://atlas3-public.s3.us-east-1.amazonaws.com/next-s3-uploads/b6b9fce4-e3e3-40cc-8878-f94153ec09b8/Header-(1).png",
+    "type": "RAFFLE",
+    "status": "RUNNING",
+    "endsAt": "2024-03-22T18:53:00.000Z",
+    "network": "Solana",
+    "projectId": "65c3601c49d0213b34a7994c",
+    "collabProjectId": null,
+    "collabRequestDeadline": null,
+    "collabDuration": null,
+    "collabType": null,
+    "rules": [
+        {
+            "id": "clsbwpcmp000jo001yd4m06v3",
+            "type": "TWITTER_FRIENDSHIP",
+            "twitterFriendshipRule": {
+                "username": "basebetio",
+                "relationships": [
+                    "FOLLOW"
+                ]
+            },
+            "twitterTweetRule": null,
+            "discordRoleRule": null,
+            "discordGuildRule": null,
+            "minimumBalanceRule": null,
+            "ownNftRule": null
+        },
+        {
+            "id": "clsbwpcmp000ko001xzieubb8",
+            "type": "TWITTER_TWEET",
+            "twitterFriendshipRule": null,
+            "twitterTweetRule": {
+                "tweetId": "1758183060669968637",
+                "actions": [
+                    "LIKE"
+                ]
+            },
+            "discordRoleRule": null,
+            "discordGuildRule": null,
+            "minimumBalanceRule": null,
+            "ownNftRule": null
+        },
+        {
+            "id": "clsbwpcmp000lo001b7pcmjg9",
+            "type": "TWITTER_TWEET",
+            "twitterFriendshipRule": null,
+            "twitterTweetRule": {
+                "tweetId": "1758183060669968637",
+                "actions": [
+                    "RETWEET"
+                ]
+            },
+            "discordRoleRule": null,
+            "discordGuildRule": null,
+            "minimumBalanceRule": null,
+            "ownNftRule": null
+        }
+    ],
+    "maxEntries": null,
+    "entryCount": 12539,
+    "usersEntered": 0,
+    "maxWinners": 25,
+    "discordRoleId": null,
+    "discordMessageId": null,
+    "discordChannelId": null,
+    "ownerId": "6537ac96d9f8496669cfd55e",
+    "processing": false,
+    "processed": false,
+    "countered": null,
+    "settings": {
+        "preventDuplicateIps": false,
+        "private": false,
+        "overrideRoleId": null,
+        "multipleCollabProjects": []
+    },
+    "teamSpots": null,
+    "paymentTokenId": null,
+    "paymentTokenAmount": null,
+    "adminCreated": false,
+    "discordServerId": null,
+    "discordRoleName": null,
+    "discordInviteUrl": null,
+    "twitterUsername": null,
+    "approvedBy": null,
+    "discordRoleIdSynced": false,
+    "project": {
+        "id": "65c3601c49d0213b34a7994c",
+        "name": "BaseBet",
+        "slug": "basebet",
+        "description": "🟢 BaseBet\n\nThe Largest Casino & Sportsbook in Crypto,\nOn-chain, Smart contract governed, No KYC, Provably Fair.\n\nAt BaseBet we have 10,850+ Games & 50+ Sport Categories! \n- Fully doxxed team, super notable Solana team of Advisors & bluechip Artists SkyPunch Studios. 🎲\n\n- **PitchDeck:** https://docsend.com/view/8732bucdgsc7t4c2\n- **TestNet Launched:** https://www.basebet.io/\n\n🚀 Coming to market with a 3,333 Utility Centric PFP NFTs on Solana which includes HUGE Utilities such as:\n\n- 30% Platform Revenue-share Per NFT! 🤝\n- Increased Rakeback / Cashback.\n- $BBT Airdrop. ⚡️\n- Discounted access for $BBT.\n- Free weekly Casino spins.\n- Free weekly bets.\n- VIP Platform Membership.\nAnd some other utilities found in our white-paper.",
+        "createdAt": "2024-02-07T10:49:00.209Z",
+        "imageUrl": "https://atlas3-public.s3.us-east-1.amazonaws.com/next-s3-uploads/6afb61b6-6eb2-4cbb-a8b0-61157e6378a9/logo-(2).png",
+        "bannerUrl": "https://atlas3-public.s3.us-east-1.amazonaws.com/next-s3-uploads/f58e095c-ae59-43b0-a827-3802672a514d/Header-(1).png",
+        "websiteUrl": "https://www.basebet.io/",
+        "discordInviteUrl": "https://discord.gg/basebetio",
+        "status": "PUBLISHED",
+        "phase": "PREMINT",
+        "network": "Solana",
+        "supply": 3333,
+        "mintPrice": null,
+        "mintDate": null,
+        "mintTime": "",
+        "roles": [
+            {
+                "type": "ADMIN",
+                "userId": "6537ac96d9f8496669cfd55e"
+            },
+            {
+                "type": "MANAGER",
+                "userId": "63f246e6a43abefc541a37d2"
+            },
+            {
+                "type": "MANAGER",
+                "userId": "63f250ba51a70be201586402"
+            },
+            {
+                "type": "MANAGER",
+                "userId": "63f3d4088d519e21905e4d39"
+            },
+            {
+                "type": "MANAGER",
+                "userId": "63f4c164476b5e609e520c2d"
+            }
+        ],
+        "discordGuild": {
+            "id": "1202183047336968232",
+            "name": "BaseBet",
+            "giveawayChannelId": null,
+            "giveawayRoleTagId": null,
+            "incomingCollabsChannelId": "",
+            "incomingCollabsTagId": "",
+            "winnerChannelId": "",
+            "teamSpotsChannelId": "",
+            "teamSpotsRoleTagId": ""
+        },
+        "twitterUsername": "Basebetio",
+        "isFeatured": false,
+        "priority": 5,
+        "verified": true,
+        "defaultRoleId": "1202183047336968237",
+        "defaultRules": [
+            {
+                "id": "clsbo5azg000ds001dy60rwbn",
+                "type": "TWITTER_FRIENDSHIP",
+                "twitterFriendshipRule": {
+                    "username": "Basebetio",
+                    "relationships": [
+                        "FOLLOW"
+                    ]
+                },
+                "twitterTweetRule": null,
+                "discordRoleRule": null,
+                "discordGuildRule": null,
+                "minimumBalanceRule": null,
+                "ownNftRule": null
+            },
+            {
+                "id": "clsnitn67000lry01q28ngqj8",
+                "type": "DISCORD_GUILD",
+                "twitterFriendshipRule": null,
+                "twitterTweetRule": null,
+                "discordRoleRule": null,
+                "discordGuildRule": {
+                    "guildId": "1202183047336968232",
+                    "guildName": "BaseBet",
+                    "guildInvite": "https://discord.gg/basebetio"
+                },
+                "minimumBalanceRule": null,
+                "ownNftRule": null
+            }
+        ],
+        "holderRules": [],
+        "channelPostSettings": [],
+        "referrer": null,
+        "withdrawSOLAddress": "",
+        "votes": 0,
+        "rank": 10,
+        "runningGiveaways": 0,
+        "accumulatedPoints": 0,
+        "allowlistTradingEnabled": true,
+        "presaleAmount": 0,
+        "roleIdOne": null,
+        "roleIdTwo": null,
+        "roleIdThree": null,
+        "ombId": null,
+        "marketplaceLink": null,
+        "presaleSettings": {
+            "treasuryAddress": "21UCyMtgeQzcLkzq8amhYpMmBPwd6uWwL9DUXXYG46f7",
+            "globalPrice": 1.5,
+            "discordChannelId": "1202183047894540289",
+            "discordRoleTagId": "",
+            "maxSupplyPerUser": 3,
+            "splMint": "So11111111111111111111111111111111111111112",
+            "discordRoleId": "1209776232929951774",
+            "teamSpotsChannelId": "1202183047894540288",
+            "teamSpotsRoleTagId": ""
+        },
+        "paymentSettings": null,
+        "adminRejected": null,
+        "tensorSlug": null,
+        "tensorFailed": null,
+        "isTensor": null
+    },
+    "collabProject": null
+}

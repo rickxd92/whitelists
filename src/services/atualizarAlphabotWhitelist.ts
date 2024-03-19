@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { WhitelistAlphabot } from 'interfaces';
+import { WhitelistAlphabot } from '../interfaces';
 import { clearTable, inserirDadosBd } from '../utils/funcoes/auxiliares';
 
-function atualizarAlphabotWhitelist() {
-  return atualizarAlphabotWhitelistRest();
+function atualizarAlphabotWhitelist({ pagina }) {
+  return atualizarAlphabotWhitelistRest(pagina);
 }
 
 function obterOpcoes(pageNum = 0, pageSize = 30) {
@@ -17,14 +17,18 @@ function obterOpcoes(pageNum = 0, pageSize = 30) {
   };
 }
 
-async function atualizarAlphabotWhitelistRest(): Promise<any> {
+async function atualizarAlphabotWhitelistRest(pagina): Promise<any> {
   let respostaBff = {};
-  let pageNum = 0;
+  let pageNum = pagina;
+  let count = 0;
+  let endPage = false;
 
-  clearTable('alphabot', 'whitelists');
+  if (pageNum === 0) {
+    clearTable('alphabot', 'whitelists');
+  }
 
   try {
-    while (true) {
+    while (count < 4) {
       console.log('Pagina atual: ', pageNum);
       const opcoes = obterOpcoes(pageNum);
       const url = opcoes.url;
@@ -34,11 +38,11 @@ async function atualizarAlphabotWhitelistRest(): Promise<any> {
       const { status, data } = await axios.get(url, { headers });
 
       if (data.length === 0) {
-        respostaBff = { status, data: 'Executado com sucesso!' };
+        endPage = true;
         break;
       }
 
-      // console.log('data', data);
+      console.log('Quantidade de whitelist por pagina => ', data.length);
 
       data.forEach(item => {
         dadosObj.push({
@@ -63,8 +67,11 @@ async function atualizarAlphabotWhitelistRest(): Promise<any> {
       inserirDadosBd('alphabot', dadosObj, 'whitelists');
 
       pageNum++;
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      count++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
+
+    respostaBff = { status: 200, data: { msg: 'Executado com sucesso!', endPage: endPage} };
 
     return { respostaBff };
   } catch (error) {

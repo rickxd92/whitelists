@@ -1,4 +1,4 @@
-import { createDB, createTable } from '../utils/funcoes/auxiliares';
+import { createTable } from '../utils/funcoes/auxiliares';
 
 function funcCreateDB(dados) {
   return atualizarAlphabotWhitelistRest(dados);
@@ -10,7 +10,7 @@ async function atualizarAlphabotWhitelistRest(dados): Promise<any> {
   const bd = dados.bd;
 
   try {
-    await createDB(bd);
+    // await createDB(bd);
     await createTable(tabela, bd);
 
     return { respostaBff: { status: 200, data: 'Executado com sucesso!' } };

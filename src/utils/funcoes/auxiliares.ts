@@ -1,61 +1,73 @@
-import { NextFunction, Request, Response } from 'express';
-import { WhitelistAlphabot } from 'interfaces';
-import { gravarLog } from '../../libs';
-import { Respostas } from '../consts';
+import { WhitelistAlphabot } from '../../interfaces';
+import { db } from '@vercel/postgres';
 require('dotenv').config();
 const { Client } = require('pg');
 
-function connectionCreate(dataBase: string, create: boolean = false) {
-  if (create) {
-    return new Client({
-      user: 'postgres',
-      password: '#Amora@157#',
-      host: 'localhost',
-      port: 5432
-    });
-  }
-
-  return new Client({
-    user: 'postgres',
-    password: '#Amora@157#',
-    database: dataBase,
-    host: 'localhost',
-    port: 5432
+function connectionCreate() {
+  const client = new Client({
+    connectionString: 'postgres://default:p8k3HqVajZyc@ep-dry-cell-a4dok5hd-pooler.us-east-1.aws.neon.tech/verceldb?sslmode=require',
   });
+  
+  return client;
 }
 
-async function createDB(bd: string) {
-  if (bd) {
-    const client = connectionCreate(bd, true);
+// function connectionCreate(dataBase: string, create: boolean = false) {
+//   if (create) {
+//     return new Client({
+//       user: 'postgres',
+//       password: '#Amora@157#',
+//       host: 'localhost',
+//       port: 5432
+//     });
+//   }
 
-    console.log('Conectando ao banco.');
+//   return new Client({
+//     user: 'postgres',
+//     password: '#Amora@157#',
+//     database: dataBase,
+//     host: 'localhost',
+//     port: 5432
+//   });
+// }
 
-    try {
-      await client.connect();
-      // Verificar se o banco de dados whitelists já existe
-      const queryResult = await client.query(`SELECT 1 FROM pg_database WHERE datname = '${bd}';`);
-      if (queryResult.rows.length === 0) {
-        // O banco de dados não existe, então criá-lo
-        await client.query(`CREATE DATABASE ${bd};`);
-        console.log('Banco de dados criado com sucesso.');
-      } else {
-        console.log('Banco de dados já existe.');
-      }
-    } catch (error) {
-      console.error('Erro ao criar banco de dados:', error);
-    } finally {
-      await client.end();
-    }
-  }
-}
+// async function createDB(bd: string) {
+//   if (bd) {
+//     const client = connectionCreate(bd, true);
+
+//     console.log('Conectando ao banco.');
+
+//     try {
+//       const client = await db.connect();
+//       // Verificar se o banco de dados whitelists já existe
+//       const queryResult = await client.query(`SELECT 1 FROM pg_database WHERE datname = '${bd}';`);
+//       if (queryResult.rows.length === 0) {
+//         // O banco de dados não existe, então criá-lo
+//         await client.query(`CREATE DATABASE ${bd};`);
+//         console.log('Banco de dados criado com sucesso.');
+//       } else {
+//         console.log('Banco de dados já existe.');
+//       }
+//     } catch (error) {
+//       console.error('Erro ao criar banco de dados:', error);
+//     } finally {
+//       await client.end();
+//     }
+//   }
+// }
+
+// async function verificarConexao() {
+//   try {
+//     const client = await db.connect();
+//   } catch {
+    
+//   }
+// }
 
 async function createTable(tabela: string, bd: string) {
   if (tabela) {
-    const client = connectionCreate(bd);
+    const client = await connectionCreate();
 
     try {
-      await client.connect();
-
       // Verificar se a tabela já existe
       const queryResult = await client.query(`SELECT EXISTS (
           SELECT 1
@@ -101,10 +113,8 @@ async function createTable(tabela: string, bd: string) {
 
 async function clearTable(tabela: string, bd: string) {
   if (tabela) {
-    const client = connectionCreate(bd);
-
+    const client = await connectionCreate();
     try {
-      await client.connect();
 
       await client.query(`TRUNCATE ${tabela};`);
 
@@ -118,8 +128,9 @@ async function clearTable(tabela: string, bd: string) {
 }
 
 async function inserirDadosBd(tabela: string, dados: WhitelistAlphabot[], bd: string) {
-  const client = connectionCreate(bd);
-
+  // const client = connectionCreate(bd);
+  const client = await connectionCreate();
+  
   try {
     console.log('Conectando ao banco.');
     console.log('Iniciando inserção dos dados...');
@@ -205,13 +216,7 @@ async function inserirDadosBd(tabela: string, dados: WhitelistAlphabot[], bd: st
 }
 
 async function lerDadosBd(tabela: string) {
-  const client = new Client({
-    user: 'postgres',
-    password: '#Amora@157#',
-    host: 'localhost',
-    database: 'whitelists',
-    port: 5432
-  });
+  const client = await connectionCreate();
 
   try {
     await client.connect();
@@ -230,7 +235,8 @@ async function lerDadosBd(tabela: string) {
 }
 
 async function alterarIsSelectedBd(bd: string, tabela: string, id: string, isSelected: boolean) {
-  const client = connectionCreate(bd);
+  // const client = connectionCreate(bd);
+  const client = await connectionCreate();
 
   try {
     await client.connect();
@@ -251,18 +257,18 @@ async function alterarIsSelectedBd(bd: string, tabela: string, id: string, isSel
   }
 }
 
-function configurarTimeout(req: Request, res: Response, next: NextFunction) {
-  const rota = req.path.substring(1);
+// function configurarTimeout(req: Request, res: Response, next: NextFunction) {
+//   const rota = req.path.substring(1);
 
-  //FIXME: Colocado fixo devido a apontamento do fortify
-  const timeout = 120000;
+//   //FIXME: Colocado fixo devido a apontamento do fortify
+//   const timeout = 120000;
 
-  res.setTimeout(timeout, () => {
-    const respostaBff = Respostas.sistemaIndisponivel(99);
-    gravarLog(rota, req.body, respostaBff);
-    res.status(respostaBff.status).json(respostaBff.corpo);
-  });
-  next();
-}
+//   res.setTimeout(timeout, () => {
+//     const respostaBff = {status: 500, corpo: 'Indisponibilidade!'};
+//     gravarLog(rota, req.body, respostaBff);
+//     res.status(respostaBff.status).json(respostaBff.corpo);
+//   });
+//   next();
+// }
 
-export { alterarIsSelectedBd, clearTable, configurarTimeout, createDB, createTable, inserirDadosBd, lerDadosBd };
+export { alterarIsSelectedBd, clearTable, createTable, inserirDadosBd, lerDadosBd };

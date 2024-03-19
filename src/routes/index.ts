@@ -8,16 +8,13 @@ import {
   getObterAtlasWhitelist,
   postCreateDB
 } from '../controllers';
-import swaggerSetupDocs from '../documentacao/swagger';
-import { Rotas, configurarTimeout } from '../utils';
+import { Rotas } from '../utils';
 
 const router = Router();
 
 router.use(swaggerUi.serve);
-router.use(configurarTimeout);
-router.get(`/${Rotas.documentacao}`, swaggerUi.setup(swaggerSetupDocs));
-router.get(`/${Rotas.updateWhitelistsAlphabot}`, getAtualizarAlphabotWhitelist);
-router.get(`/${Rotas.updateWhitelistsAtlas}`, getAtualizarAtlasWhitelist);
+router.post(`/${Rotas.updateWhitelistsAlphabot}`, getAtualizarAlphabotWhitelist);
+router.post(`/${Rotas.updateWhitelistsAtlas}`, getAtualizarAtlasWhitelist);
 router.get(`/${Rotas.obterAlphabotWhitelist}`, getObterAlphabotWhitelist);
 router.get(`/${Rotas.obterAtlasWhitelist}`, getObterAtlasWhitelist);
 router.post(`/${Rotas.createDB}`, postCreateDB);

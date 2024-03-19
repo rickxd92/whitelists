@@ -2,8 +2,8 @@ import axios from 'axios';
 import { WhitelistAlphabot } from '../interfaces';
 import { clearTable, inserirDadosBd } from '../utils/funcoes/auxiliares';
 
-function atualizarAtlas3Whitelist() {
-  return atualizarAtlas3WhitelistRest();
+function atualizarAtlas3Whitelist({ pagina }) {
+  return atualizarAtlas3WhitelistRest(pagina);
 }
 
 function obterOpcoes(pageNum = 0, pageSize = 30) {
@@ -18,14 +18,18 @@ function obterOpcoes(pageNum = 0, pageSize = 30) {
   };
 }
 
-async function atualizarAtlas3WhitelistRest(): Promise<any> {
+async function atualizarAtlas3WhitelistRest(pagina): Promise<any> {
   let respostaBff = {};
-  let pageNum = 0;
+  let pageNum = pagina;
+  let count = 0;
+  let endPage = false;
 
-  clearTable('atlas', 'whitelists');
+  if (pageNum === 0) {
+    clearTable('atlas', 'whitelists');
+  }
 
   try {
-    while (true) {
+    while (count < 4) {
       console.log('Pagina atual: ', pageNum);
       const opcoes = obterOpcoes(pageNum);
       const url = opcoes.url;
@@ -35,7 +39,7 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
       const { status, data } = await axios.get(url, { headers });
 
       if (data.giveaways.length === 0) {
-        respostaBff = { status: 200, data: 'Executado com sucesso!' };
+        endPage = true;
         break;
       }
 
@@ -118,8 +122,11 @@ async function atualizarAtlas3WhitelistRest(): Promise<any> {
       inserirDadosBd('atlas', dadosObj, 'whitelists');
 
       pageNum++;
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      count++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
+
+    respostaBff = { status: 200, data: { msg: 'Executado com sucesso!', endPage: endPage} };
 
     return { respostaBff };
   } catch (error) {
