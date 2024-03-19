@@ -1,181 +1,274 @@
-import { NextFunction, Request, Response } from 'express';
-import xml2js, { processors } from 'xml2js';
-import { gravarLog } from '../../libs';
-import { Erros, Respostas } from '../consts';
+import { WhitelistAlphabot } from '../../interfaces';
+import { db } from '@vercel/postgres';
+require('dotenv').config();
+const { Client } = require('pg');
 
-function criarbd() {
-  const sqlite3 = require('sqlite3').verbose();
-
-  // Cria ou abre o banco de dados "database.sqlite"
-  const db = new sqlite3.Database('database.sqlite');
-
-  // Executa uma consulta para criar a tabela "usuarios"
-  db.run(`
-CREATE TABLE IF NOT EXISTS whitelistAlphabot (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nome VARCHAR(40) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  senha VARCHAR(255) NOT NULL
-);
-`);
-
-  // Fecha a conexão com o banco de dados
-  db.close();
-}
-
-function inserirDadosBd() {
-  const sqlite3 = require('sqlite3').verbose();
-
-  // Abre o banco de dados "database.sqlite"
-  const db = new sqlite3.Database('database.sqlite');
-
-  // Insere um novo usuário na tabela "usuarios"
-  db.run(`
-INSERT INTO whitelistAlphabot (nome, email, senha)
-VALUES ('João Silva', 'joaosilva@email.com', '123456')
-`);
-
-  // Fecha a conexão com o banco de dados
-  db.close();
-}
-
-function lerDadosBd() {
-  const sqlite3 = require('sqlite3').verbose();
-
-  // Abre o banco de dados "database.sqlite"
-  const db = new sqlite3.Database('database.sqlite');
-
-  // Seleciona todos os usuários da tabela "usuarios"
-  db.all('SELECT * FROM whitelistAlphabot', (err, rows) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    // Exibe os dados dos usuários
-    console.log(rows);
-
-    // Fecha a conexão com o banco de dados
-    db.close();
+function connectionCreate() {
+  const client = new Client({
+    connectionString: 'postgres://default:p8k3HqVajZyc@ep-dry-cell-a4dok5hd-pooler.us-east-1.aws.neon.tech/verceldb?sslmode=require',
   });
+  
+  return client;
 }
 
-function descaracterizarTexto(texto: string, simbolo: string, inicio: number = 0, final?: number) {
-  const textoSubstituir = texto.substring(inicio, final);
-  const mascara = textoSubstituir.replace(/\S/g, simbolo);
-  const textoDescaracterizado = texto.replace(textoSubstituir, mascara);
-  return textoDescaracterizado;
-}
+// function connectionCreate(dataBase: string, create: boolean = false) {
+//   if (create) {
+//     return new Client({
+//       user: 'postgres',
+//       password: '#Amora@157#',
+//       host: 'localhost',
+//       port: 5432
+//     });
+//   }
 
-function configurarTimeout(req: Request, res: Response, next: NextFunction) {
-  const rota = req.path.substring(1);
+//   return new Client({
+//     user: 'postgres',
+//     password: '#Amora@157#',
+//     database: dataBase,
+//     host: 'localhost',
+//     port: 5432
+//   });
+// }
 
-  //FIXME: Colocado fixo devido a apontamento do fortify
-  const timeout = 120000;
+// async function createDB(bd: string) {
+//   if (bd) {
+//     const client = connectionCreate(bd, true);
 
-  res.setTimeout(timeout, () => {
-    const respostaBff = Respostas.sistemaIndisponivel(99);
-    gravarLog(rota, req.body, respostaBff);
-    res.status(respostaBff.status).json(respostaBff.corpo);
-  });
-  next();
-}
+//     console.log('Conectando ao banco.');
 
-function obterMensagemErro(rota: string, erroLegado: string, codigoMensagem?: string) {
-  const errosArray = Erros[rota] ? Object.keys(Erros[rota]) : [];
-  let mensagemErro = Respostas.sistemaIndisponivel(99);
+//     try {
+//       const client = await db.connect();
+//       // Verificar se o banco de dados whitelists já existe
+//       const queryResult = await client.query(`SELECT 1 FROM pg_database WHERE datname = '${bd}';`);
+//       if (queryResult.rows.length === 0) {
+//         // O banco de dados não existe, então criá-lo
+//         await client.query(`CREATE DATABASE ${bd};`);
+//         console.log('Banco de dados criado com sucesso.');
+//       } else {
+//         console.log('Banco de dados já existe.');
+//       }
+//     } catch (error) {
+//       console.error('Erro ao criar banco de dados:', error);
+//     } finally {
+//       await client.end();
+//     }
+//   }
+// }
 
-  if (codigoMensagem === '100') {
-    return Respostas.mensagemSucessoCodigo100(erroLegado);
-  }
+// async function verificarConexao() {
+//   try {
+//     const client = await db.connect();
+//   } catch {
+    
+//   }
+// }
 
-  if (erroLegado.includes('O arquivo anexado não pode ser maior que')) {
-    mensagemErro = Respostas.excedeLimiteTamanho(7);
-  }
+async function createTable(tabela: string, bd: string) {
+  if (tabela) {
+    const client = await connectionCreate();
 
-  if (erroLegado.includes('Beneficiário não possui apólice vigente na data')) {
-    mensagemErro = Respostas.semApolice(99, erroLegado);
-  }
-  errosArray.forEach(erro => {
-    if (erroLegado.includes(erro)) {
-      mensagemErro = Erros[rota][erro];
-    }
-  });
-  return mensagemErro;
-}
+    try {
+      // Verificar se a tabela já existe
+      const queryResult = await client.query(`SELECT EXISTS (
+          SELECT 1
+          FROM   information_schema.tables 
+          WHERE  table_schema = '${bd}'
+          AND    table_name = '${tabela}'
+      );`);
 
-function obterAmbiente() {
-  let ambiente = '';
-  if (process.env.NODE_ENV !== 'PRD') {
-    ambiente = `${process.env.NODE_ENV?.toLowerCase().trim()}`;
-  }
-  return ambiente;
-}
+      const tabelaExiste = queryResult.rows[0].exists;
 
-function primeirasMaiusculas(dado: string) {
-  let palavrasSeparadas = dado.toLowerCase().split(' ');
-  for (var i = 0; i < palavrasSeparadas.length; i++) {
-    palavrasSeparadas[i] = palavrasSeparadas[i].charAt(0).toUpperCase() + palavrasSeparadas[i].substring(1);
-  }
-  return palavrasSeparadas.join(' ');
-}
-
-function converterXmlParaJson(xml: string) {
-  const parser = new xml2js.Parser({
-    ignoreAttrs: true,
-    explicitArray: false,
-    explicitRoot: false,
-    tagNameProcessors: [processors.stripPrefix]
-  });
-  return parser.parseStringPromise(xml);
-}
-
-function tratarNumeroCartao(cartaoSegurado: any) {
-  const numeroCartaoLength = 15;
-  let numeroCartao = cartaoSegurado.toString();
-
-  if (numeroCartao.length < numeroCartaoLength) {
-    while (numeroCartao.length < numeroCartaoLength) {
-      numeroCartao = '0' + numeroCartao;
-    }
-  }
-
-  cartaoSegurado = numeroCartao;
-  return cartaoSegurado;
-}
-
-function trataErro(error): { status: any; data: any } {
-  if (error?.response?.status && error?.response?.data) {
-    return { data: error.response.data, status: error.response.status };
-  } else if (error.status === 200 || error.status === 400) {
-    return { status: error.status, data: error.data };
-  } else {
-    return {
-      status: 500,
-      data: {
-        mensagens: [
-          {
-            codigoMensagem: '500',
-            descricaoMensagem: 'Desculpe, estamos com problemas técnicos. Tente novamente daqui alguns minutos.'
-          }
-        ],
-        numeroProtocoloReembolso: '',
-        taskId: ''
+      if (!tabelaExiste) {
+        // A tabela não existe, então criá-la
+        await client.query(`CREATE TABLE ${tabela} (
+          id VARCHAR(255) PRIMARY KEY,
+          slug VARCHAR(255),
+          nome VARCHAR(255),
+          endDate TIMESTAMP,
+          blockchain VARCHAR(255),
+          ogPrice VARCHAR(255),
+          wlPrice VARCHAR(255),
+          pubPrice VARCHAR(255),
+          supply VARCHAR(255),
+          qtdWinners VARCHAR(255),
+          giveawayUrl VARCHAR(255),
+          plataforma VARCHAR(255),
+          needDiscordRole BOOLEAN,
+          discordRole TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          isSelected BOOLEAN DEFAULT FALSE
+        );`);
+        console.log('Tabela criada com sucesso.');
+      } else {
+        console.log('Tabela já existe.');
       }
-    };
+    } catch (error) {
+      console.error('Erro ao criar tabela:', error);
+    } finally {
+      await client.end();
+    }
   }
 }
 
-export {
-  configurarTimeout,
-  converterXmlParaJson,
-  criarbd,
-  descaracterizarTexto,
-  inserirDadosBd,
-  lerDadosBd,
-  obterAmbiente,
-  obterMensagemErro,
-  primeirasMaiusculas,
-  trataErro,
-  tratarNumeroCartao
-};
+async function clearTable(tabela: string, bd: string) {
+  if (tabela) {
+    const client = await connectionCreate();
+    try {
+
+      await client.query(`TRUNCATE ${tabela};`);
+
+      console.log('Feito limpeza da tabela.');
+    } catch (error) {
+      console.error('Erro ao limpar tabela:', error);
+    } finally {
+      await client.end();
+    }
+  }
+}
+
+async function inserirDadosBd(tabela: string, dados: WhitelistAlphabot[], bd: string) {
+  // const client = connectionCreate(bd);
+  const client = await connectionCreate();
+  
+  try {
+    console.log('Conectando ao banco.');
+    console.log('Iniciando inserção dos dados...');
+    await client.connect();
+
+    // Inicia a transação
+    await client.query('BEGIN');
+
+    // Array para armazenar os IDs dos registros inseridos com sucesso
+    const idsInseridos: string[] = [];
+
+    dados.forEach(async (dado: WhitelistAlphabot) => {
+      const consulta = `INSERT INTO ${tabela} (
+        id,
+        slug,
+        nome,
+        endDate,
+        blockchain,
+        ogPrice,
+        wlPrice,
+        pubPrice,
+        supply,
+        qtdWinners,
+        giveawayUrl,
+        plataforma,
+        needDiscordRole,
+        discordRole
+        )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+      )
+      ON CONFLICT (id) DO UPDATE
+      SET 
+        slug = EXCLUDED.slug,
+        nome = EXCLUDED.nome,
+        endDate = EXCLUDED.endDate,
+        blockchain = EXCLUDED.blockchain,
+        ogPrice = EXCLUDED.ogPrice,
+        wlPrice = EXCLUDED.wlPrice,
+        pubPrice = EXCLUDED.pubPrice,
+        supply = EXCLUDED.supply,
+        qtdWinners = EXCLUDED.qtdWinners,
+        giveawayUrl = EXCLUDED.giveawayUrl,
+        plataforma = EXCLUDED.plataforma,
+        needDiscordRole = EXCLUDED.needDiscordRole,
+        discordRole = EXCLUDED.discordRole
+      RETURNING id;`;
+
+      const valores = [
+        dado.id,
+        dado.slug,
+        dado.nome,
+        dado.endDate,
+        dado.blockchain,
+        dado.ogPrice,
+        dado.wlPrice,
+        dado.pubPrice,
+        dado.supply,
+        dado.qtdVencedores,
+        dado.urlCompleta,
+        dado.plataforma,
+        dado.precisaDiscordRole,
+        dado.discordRole
+      ];
+      // Verificar se a tabela já existe
+      const resultado = await client.query(consulta, valores);
+
+      // Adiciona o ID do registro inserido com sucesso ao array
+      idsInseridos.push(resultado.rows[0].id);
+    });
+
+    console.log('Dados adicionados com sucesso.');
+
+    // Finaliza a transação
+    await client.query('COMMIT');
+  } catch (error) {
+    // Em caso de erro, desfaz a transação
+    await client.query('ROLLBACK');
+    console.error('Erro ao Adicionar Dados na tabela:', error);
+  } finally {
+    await client.end();
+  }
+}
+
+async function lerDadosBd(tabela: string) {
+  const client = await connectionCreate();
+
+  try {
+    await client.connect();
+
+    // Verificar se a tabela já existe
+    const queryResult = await client.query(`SELECT * FROM ${tabela};`);
+
+    // console.log('queryResult ===> ', queryResult.rows);
+
+    return queryResult.rows;
+  } catch (error) {
+    console.error('Erro ao recuperar dados:', error);
+  } finally {
+    await client.end();
+  }
+}
+
+async function alterarIsSelectedBd(bd: string, tabela: string, id: string, isSelected: boolean) {
+  // const client = connectionCreate(bd);
+  const client = await connectionCreate();
+
+  try {
+    await client.connect();
+
+    await client.query(`
+      UPDATE ${tabela}
+      SET isselected = ${isSelected}
+      WHERE id = '${id}';
+    `);
+
+    console.log('Dados atualizados com sucesso.');
+
+    return true;
+  } catch (error) {
+    console.error('Erro ao recuperar dados:', error);
+  } finally {
+    await client.end();
+  }
+}
+
+// function configurarTimeout(req: Request, res: Response, next: NextFunction) {
+//   const rota = req.path.substring(1);
+
+//   //FIXME: Colocado fixo devido a apontamento do fortify
+//   const timeout = 120000;
+
+//   res.setTimeout(timeout, () => {
+//     const respostaBff = {status: 500, corpo: 'Indisponibilidade!'};
+//     gravarLog(rota, req.body, respostaBff);
+//     res.status(respostaBff.status).json(respostaBff.corpo);
+//   });
+//   next();
+// }
+
+export { alterarIsSelectedBd, clearTable, createTable, inserirDadosBd, lerDadosBd };
